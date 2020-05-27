@@ -36,17 +36,10 @@ Vue.use(VueRouter)
     },
     //* votos
     {
-      path: '/vote',
+      path: '/vote/:session/:motion',
       name: 'vote',
       component: () =>
           import ('../components/Vote/VoteAdd'),
-      meta: { auth: true }
-    },
-    {
-      path: '/vote/report',
-      name: 'voteReport',
-      component: () =>
-          import ('../components/Vote/VoteView'),
       meta: { auth: true }
     },
     //* Sesiones
@@ -56,12 +49,18 @@ Vue.use(VueRouter)
       component: () =>
           import ('../components/Session/SessionCreate'),
       meta: { auth: true }
+    },
+    //* Mociones
+    {
+      path: '/session/:session',
+      name: 'sessionMotion',
+      component: () =>
+          import ('../components/Motion/Motion'),
+      meta: { auth: true }
     }
 ]
 
 const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
   routes
 })
 
@@ -75,7 +74,7 @@ router.beforeEach((to, from, next) => {
     } else next();
   } else {
     if (Vue.auth.isAuth()) {
-      next({ path: '/person' })
+      next({ path: '/session' })
     } else next();
   }
   next();

@@ -75,7 +75,7 @@
                         lastname: "",
                         email: "",
                         password:"",
-                        role: 'concejal'
+                        role: 'CONCEJAL'
                     }
                 }
             }
@@ -85,7 +85,7 @@
             passwordLength: 10,
             error: '',
             loader: false,
-            roles: ['concejal', 'administrador']
+            roles: ['CONCEJAL', 'ADMINISTRADOR']
         }),
         methods: {
 
@@ -141,7 +141,7 @@
                 this.form.name = '';
                 this.form.lastname = '';
                 this.form.email = '';
-                this.form.role = 'concejal';
+                this.form.role = 'CONCEJAL';
                 this.form.password = '';
                 this.type = 'password';
             },

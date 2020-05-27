@@ -59,7 +59,7 @@
         },
         beforeCreate() {
             if(this.$auth.isAuth()) {
-                this.$router.push('/person')
+                this.$router.push('/session')
             }
         },
         methods: {
@@ -80,7 +80,7 @@
                                 if(this.route)
                                     this.$router.push(this.route);
                                 else
-                                    this.$router.push({name: 'person'})
+                                    this.$router.push({name: 'session'})
                             }).catch(() => {
                                 this.error = 'Ocurrió un error al validar sus datos, contacte con el administrador';
                             }).finally(() => {
@@ -88,7 +88,11 @@
                                 this.message = '';
                             });
                         }
-                    });
+                    }).catch(err => {
+                        if(err.response && err.response.data){
+                            this.error = err.response.data.message;
+                        }
+                    }).finally(() => this.loader = false);
 
                 } catch (err) {
                      if(err.response && err.response.data){

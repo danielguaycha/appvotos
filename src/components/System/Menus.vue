@@ -36,9 +36,9 @@
                     </v-btn>
                 </template>
                 <v-list>
-                    <v-list-item to="/profile/config" >
-                        <v-list-item-title>Configurar Perfil</v-list-item-title>
-                    </v-list-item>
+<!--                    <v-list-item to="/profile/config" >-->
+<!--                        <v-list-item-title>Configurar Perfil</v-list-item-title>-->
+<!--                    </v-list-item>-->
                     <v-list-item @click="logout" >
                         <v-list-item-title>Cerrar Sesión</v-list-item-title>
                     </v-list-item>

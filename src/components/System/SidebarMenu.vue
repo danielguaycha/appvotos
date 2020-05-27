@@ -59,12 +59,12 @@
                     to: '/person',
                     active: false,
                 },
-                {
-                    action: 'mdi-ballot',
-                    title: 'Votación',
-                    to: '/vote',
-                    active: false,
-                },
+                // {
+                //     action: 'mdi-ballot',
+                //     title: 'Votación',
+                //     to: '/vote',
+                //     active: false,
+                // },
                 {
                     action: 'mdi-account-group',
                     title: 'Sesiones',

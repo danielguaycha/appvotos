@@ -1,32 +1,30 @@
 <template>
     <v-form @submit.prevent="onSubmit">
-        <v-row>
-            <v-col md="12" cols="12">
-                <v-textarea autofocus prepend-icon="mdi-account-group"
-                            v-model="form.text" label="Tema de la sesión" required  rows="4"/>
-            </v-col>
-            <v-col md="12" cols="12" class="text-right">
-                <v-btn color="primary" class="mx-md-1" type="submit" :disabled="loader">
-                    <v-progress-circular
-                            class="mr-2"
-                            size="20"
-                            v-if="loader"
-                            indeterminate
-                            color="white"/>
-                    {{ this.method.toLowerCase() === 'post' ? 'Agregar': 'Actualizar' }}
+        <v-row justify="center" align="center" dense>
+            <div class="flex-grow-1">
+                <v-text-field full-width v-model="form.text" outlined autofocus shaped
+                              prepend-icon="mdi-ballot" label="Escriba aquí el texto de su nueva moción" hide-details></v-text-field>
+            </div>
+            <div class="ml-2 d-flex align-center justify-end">
+                <v-btn type="submit"
+                       :loading="loader"
+                       fab dark small depressed color="primary">
+
+                    <v-icon v-if="method==='POST'">mdi-plus</v-icon>
+                    <v-icon v-else>mdi-pencil</v-icon>
                 </v-btn>
-            </v-col>
+            </div>
         </v-row>
     </v-form>
 </template>
 
 <script>
     export default {
-        name: 'SessionForm',
+        name: 'MotionForm',
         props: {
             url: {
                 type: String,
-                default: '/registrar-sesion'
+                default: '/registrar-mocion'
             },
             method: {
                 type: String,
@@ -42,25 +40,31 @@
             }
         },
         data: () => ({
+            id: null,
             loader: false,
-            error: null
         }),
+        mounted() {
+            this.id = this.$route.params.session;
+        },
         methods: {
             onSubmit(){
                 if(!this.form.text) {
-                    this.$alert.err("Ingrese el tema de la session")
+                    this.$alert.err("Ingrese el tema de la moción")
                     return;
                 }
-                this.loader = true;
-                // this.$http.post(`/registrar-sesion`, this.form).then(res => {
-                //     if(res.data && res.data.status === 'success') {
-                //         this.$emit('session', res.data.session);
-                //         this.$alert.ok("Sesión registrada con éxito");
-                //     }
-                // }).catch(err => {
-                //     console.log(err);
-                // }).finally(() => this.loader = false);
+                if(this.method === 'POST'){
+                    this.form.id = this.id;
+                }
 
+                this.loader = true;
+
+                // this.$http.post(`/registrar-mocion`, this.form).then(res => {
+                //     if (res.data && res.data.status === 'success') {
+                //         this.$alert.ok(res.data.message);
+                //         this.form.text = '';
+                //         this.$emit('motion', res.data.motion);
+                //     }
+                // }).finally(() => this.loader = false);
                 this.$http({
                     method: this.method,
                     url: this.url,
@@ -68,13 +72,14 @@
                 }).then(res => {
                     if(this.method.toLowerCase() === 'post'){
                         if(res.data && res.data.status === 'success') {
-                            this.$emit('session', res.data.session);
-                            this.$alert.ok("Sesión registrada con éxito");
+                            this.form.text = '';
+                            this.$emit('motion', res.data.motion);
+                            this.$alert.ok(res.data.message);
                         }
                     } else {
                         // on update user
                         if(res.data && res.data.status && res.data.status === 'success') {
-                            this.$emit('session', res.data.session);
+                            this.$emit('motion', res.data.motion);
                             this.$alert.ok(res.data.message);
                         }
                     }

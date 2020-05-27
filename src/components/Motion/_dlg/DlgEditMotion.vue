@@ -3,12 +3,12 @@
             v-model="show" :fullscreen="$vuetify.breakpoint.smAndDown" width="600px" origin="center top">
         <v-card>
             <v-card-title>
-                <span>Editar Sesión</span>
+                <span>Editar Moción</span>
             </v-card-title>
             <v-card-text>
-                <SessionForm @session="close"
+                <MotionFrm @motion="close"
                              v-if="form._id"
-                             :url="`/actualiza-sesion/${form._id}`"
+                             :url="`/actualiza-mocion/${form._id}`"
                              method="put" :form="form"/>
             </v-card-text>
         </v-card>
@@ -16,10 +16,10 @@
 </template>
 
 <script>
-    import SessionForm from "../_frm/FrmSession";
+    import MotionFrm from "../_frm/MotionFrm";
     export default {
-        name: 'DlgEditSession',
-        components: {SessionForm},
+        name: 'DlgEditMotion',
+        components: {MotionFrm},
         props: {
             value: Boolean,
             form: {
@@ -37,7 +37,7 @@
         }),
         methods: {
             close($event) {
-                this.$emit('session', $event);
+                this.$emit('motion', $event);
                 this.show = false;
             }
         },
