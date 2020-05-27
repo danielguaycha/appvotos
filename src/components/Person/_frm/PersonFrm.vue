@@ -85,7 +85,7 @@
             passwordLength: 10,
             error: '',
             loader: false,
-            roles: ['CONCEJAL', 'ADMINISTRADOR']
+            roles: ['CONCEJAL', 'ADMINISTRADOR', 'ALCALDE', 'VICEALCALDE']
         }),
         methods: {
 
@@ -93,7 +93,7 @@
             onSubmit() {
                 if(! this.validate() ) return;
                 this.loader = true;
-                this.form.role = this.form.role.toLowerCase();
+                this.form.role = this.form.role.toUpperCase();
                 this.$http({
                     method: this.method,
                     url: this.url,
