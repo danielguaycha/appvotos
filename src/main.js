@@ -5,9 +5,10 @@ import store from './store'
 import Config from './config';
 import vuetify from './plugins/vuetify';
 import Auth from './plugins/auth';
-
+import moment from 'moment-timezone'
 import "./plugins/toasted";
 import './plugins/axios';
+require('moment/locale/es');
 
 Vue.config.productionTip = false
 Vue.prototype.$env = {
@@ -15,6 +16,9 @@ Vue.prototype.$env = {
   appName: Config.appName
 };
 Vue.use(Auth);
+Vue.use(require('vue-moment'),{
+  moment
+});
 
 new Vue({
   router,

@@ -3,7 +3,7 @@
         <v-col>
             <h3 class="my-2">Detalle</h3>
             <v-expansion-panels v-model="panel" multiple>
-                <v-expansion-panel>
+                <v-expansion-panel v-if="getTotalOrdinarias() > 0">
                     <v-expansion-panel-header>Votación ordinaria ({{ getTotalOrdinarias() }})</v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <ul>
@@ -34,7 +34,7 @@
                     </v-expansion-panel-content>
                 </v-expansion-panel>
 
-                <v-expansion-panel>
+                <v-expansion-panel v-if="getTotalNominativas() > 0">
                     <v-expansion-panel-header>Votación nominativa ({{ getTotalNominativas() }})</v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <ul>
@@ -65,7 +65,7 @@
                     </v-expansion-panel-content>
                 </v-expansion-panel>
 
-                <v-expansion-panel>
+                <v-expansion-panel v-if="getTotalNominalRazonada() > 0">
                     <v-expansion-panel-header>Votación nominal razonada ({{ getTotalNominalRazonada() }})</v-expansion-panel-header>
                     <v-expansion-panel-content>
                         <ul>

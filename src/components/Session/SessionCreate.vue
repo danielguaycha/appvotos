@@ -13,7 +13,7 @@
                 <v-card shaped outlined>
                     <v-card-text class="d-flex justify-space-between py-0 px-2">
                         <v-row class="d-flex align-center">
-                            <v-col cols="10">
+                            <v-col cols="9">
                                 <router-link :to="`/session/${s._id}`" class="session-link">
                                     <div class="d-flex">
                                         <span>
@@ -25,6 +25,9 @@
                             </v-col>
 
                             <v-col class="d-flex justify-end">
+                                <v-btn fab dark x-small depressed color="error" class="mr-1">
+                                    <v-icon @click="deleteSession(s)">mdi-delete</v-icon>
+                                </v-btn>
                                 <v-btn fab dark x-small depressed color="primary">
                                     <v-icon @click="editSession(s)">mdi-pencil</v-icon>
                                 </v-btn>
@@ -52,7 +55,7 @@
 
         <Loader :show="loader" message="Cargando sesiones...."></Loader>
 
-
+        <Confirm ref="confirm"></Confirm>
     </div>
 </template>
 
@@ -61,8 +64,9 @@
     import DlgSession from "./_dialogs/DlgSession";
     import DlgEditSession from "./_dialogs/DlgEditSession";
     import Loader from "../System/Loader";
+    import Confirm from "../System/Confirm";
     export default {
-        components: {Loader, DlgEditSession, DlgSession},
+        components: {Confirm, Loader, DlgEditSession, DlgSession},
         data: () => ({
             dialog: false,
             dialogEdit: false,
@@ -100,6 +104,25 @@
                 }
                 this.dialogEdit = true;
             },
+            async deleteSession(session) {
+                const confirm = await
+                    this.$refs.confirm.open('Eliminar Sesión', `¿Esta seguro que desea eliminar esta sesión?`);
+                if(!confirm) return;
+                this.$http.delete(`/eliminar-sesion/${session._id}`).then(res => {
+                        if(res.data && res.data.status === 'success') {
+                            const index = this.sessions.indexOf(session);
+                            this.sessions.splice(index, 1);
+                            this.$alert.ok(res.data.message);
+                        } else {
+                            this.$alert.err("Upps! algo salió mal reintenta");
+                        }
+                    })
+                    .catch(err => () => {
+                        if(err.response && err.response.data){
+                            this.$alert.err(err.response.data.message);
+                        }
+                    })
+            }
         }
     }
 </script>

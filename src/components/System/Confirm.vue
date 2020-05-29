@@ -50,7 +50,7 @@
             title: null,
             options: {
                 color: 'primary',
-                width: 290,
+                width: 350,
                 zIndex: 200
             }
         }),

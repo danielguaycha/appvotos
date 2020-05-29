@@ -29,7 +29,7 @@
                         </v-select>
                     </v-col>
                     <v-col md="6">
-                        <v-select label="Tipo de votación"
+                        <v-select :loading="loaderMotion" label="Tipo de votación" :readonly="selectedTypePoll != null || loaderMotion"
                                   :items="voteType"
                                   v-model="form.type_poll"></v-select>
                     </v-col>
@@ -72,20 +72,21 @@
         </v-card-text>
     </v-card>
         <DlgVoteDetail :motion="motion" ref="form" v-model="dlgDetail"/>
+        <Confirm ref="confirm"></Confirm>
     </div>
 </template>
 
 <script>
 
     import DlgVoteDetail from "./_dlg/DlgVoteDetail";
+    import Confirm from "../System/Confirm";
     export default {
-        components: {DlgVoteDetail},
+        components: {Confirm, DlgVoteDetail},
         data: () => ({
             session: null,
             motion: null,
-            error: '',
-            loaderUsers: false,
             loader: false,
+            loaderUsers: false,
             loaderMotion: false,
             users: [],
             voteType: ['ORDINARIA', 'NOMINATIVA', 'NOMINAL RAZONADA'],
@@ -101,6 +102,7 @@
                 poll: null
             },
             dlgDetail: false,
+            selectedTypePoll: null,
         }),
         async created() {
             this.session =  this.$route.params.session;
@@ -111,7 +113,7 @@
             this.getInfoMotion();
         },
         methods: {
-            onSubmit(){
+            async onSubmit(){
                 if(!this.form.user) {
                     this.$alert.err("Seleccione un concejal");
                     return;
@@ -125,6 +127,8 @@
                     return;
                 }
                 // send form
+                const confirm = await this.$refs.confirm.open(`Votación ${this.form.options}`, `¿Está seguro de enviar la votación "${this.form.options.toUpperCase()}" con el tipo de votación ${this.form.type_poll.toUpperCase()}?`);
+                if(!confirm) return;
                 this.loader=true;
                 this.$http.post(`/registrar-voto`, this.form).then(res =>{
                     if(res.data) {
@@ -133,6 +137,7 @@
                             ...this.form,
                             user: null,
                         };
+                        this.selectedTypePoll = this.form.type_poll;
                     }
                     this.$refs.form.updateVotes()
                 }).catch(err => {
@@ -153,11 +158,15 @@
             },
             getInfoMotion() {
                 this.loaderMotion = true;
-                this.$http.get(`/listar-mocion/${this.motion}`).then(res => {
+                this.$http.get(`/lista-mocion-tipovotacion/${this.motion}`).then(res => {
                     if(res.data.status === 'success') {
                         this.motionInfo = res.data.motion;
                         if (this.motionInfo.poll) {
-                            this.form.poll = this.motionInfo.poll;
+                            this.form.poll = this.motionInfo.poll._id;
+                            if(this.motionInfo.poll.type_poll) {
+                                this.selectedTypePoll = this.motionInfo.poll.type_poll;
+                                this.form.type_poll = this.selectedTypePoll;
+                            }
                         }
                         this.addBreadcrumbs();
                     }
@@ -167,13 +176,8 @@
                 if(!this.motionInfo) return;
                 this.breadcrumbs = [
                     {
-                        text: 'Sesiones',
-                        href: `session`,
-                        disabled: false
-                    },
-                    {
-                      text: `${this.motionInfo._session.text.substring(0, 80)+""}`,
-                    href: `session/${this.session}`,
+                        text: 'Sesión',
+                        href: `session/${this.session}`,
                     },
                     {
                         text: `${this.motionInfo.text}`,
@@ -194,6 +198,13 @@
     }
 </script>
 
-<style scoped>
-
+<style>
+    .disabled {
+        pointer-events:none;
+        color: #bfcbd9;
+        cursor: not-allowed;
+        background-image: none;
+        background-color: #eef1f6;
+        border-color: #d1dbe5;
+    }
 </style>

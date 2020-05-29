@@ -34,6 +34,12 @@
                            :to="`/person/${item._id}/edit`">
                         <v-icon small>mdi-pencil</v-icon>
                     </v-btn>
+
+                    <v-btn x-small fab color="error" elevation="0"
+                           title="Eliminar usuario"
+                           @click="deleteUser(item)">
+                        <v-icon small>mdi-delete</v-icon>
+                    </v-btn>
                     <!-- Change State Patient
                     <v-btn x-small outlined fab color="error" v-if="item.active"
                            title="Dar de baja a Paciente"
@@ -49,7 +55,7 @@
                 </template>
             </v-data-table>
             <div class="text-center pt-2">
-                <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                <v-pagination v-model="page" :length="pageCount" @input="getAllUsers"></v-pagination>
             </div>
         </v-card-text>
         <Confirm ref="confirm"></Confirm>
@@ -76,9 +82,11 @@
             pageCount: 0,
             itemsPerPage: 30,
             loader: false,
+            deleteLoader: false,
             users: []
         }),
         mounted() {
+            this.page = 1;
             this.getAllUsers();
         },
         methods: {
@@ -87,12 +95,35 @@
                 this.loader = true;
                 this.$http.get(`/users/${this.page}`).then(res => {
                     this.users = res.data.users;
+                    this.pageCount = res.data.pages;
                 }).catch( () => {
                     this.$alert.err("Upps! no hemos podido obtaner la lista de usuarios, consulte con el administrador");
                 }).finally( () => {
                     this.loader = false;
                 })
             },
+
+            async deleteUser(user) {
+                const confirm = await
+                    this.$refs.confirm.open('Eliminar Persona', `¿Estas seguro que desea a ${user.name} ${user.lastname} del listado de personas?`);
+                if(!confirm) return;
+                this.deleteLoader = true;
+                this.$http.delete(`/eliminar-usuario/${user._id}`)
+                    .then(res => {
+                       if(res.data.status && res.data.status === 'success') {
+                           const index = this.users.indexOf(user);
+                           this.users.splice(index, 1);
+                           this.$alert.ok(res.data.message);
+                       }
+                    })
+                    .catch(err => () => {
+                        if(err.response && err.response.data){
+                            this.$alert.err(err.response.data.message);
+                        }
+                    })
+                    .finally(() => this.deleteLoader = false);
+            }
+
             /*changeStatus(item) {
                 this.$http.patch(`/users/${item.id}/active`).then(res => {
                     if(res.data.object) {

@@ -48,6 +48,7 @@
             </v-col>
         </v-row>
 <!--        <DlgVoteDetail :motion="selectedMotion._id" v-if="selectedMotion" ref="form" v-model="dlgDetail"/>-->
+        <Confirm ref="confirm"></Confirm>
     </div>
 </template>
 
@@ -55,10 +56,11 @@
     import MotionForm from "./_frm/MotionFrm";
     import Loader from "../System/Loader";
     import DlgEditMotion from "./_dlg/DlgEditMotion";
+    import Confirm from "../System/Confirm";
 
     export default {
         name: 'Motion',
-        components: {DlgEditMotion, Loader, MotionForm},
+        components: {Confirm, DlgEditMotion, Loader, MotionForm},
         data: () => ({
             id: null,
             loader: false,
@@ -94,9 +96,9 @@
                     }
                 }).finally(() => this.loader = false);
             },
-            deleteMotion(motion){
-                if(!window.confirm("¿Esta seguro que desea eliminar esta moción?")) { return ; }
-
+            async deleteMotion(motion){
+                const confirm = await this.$refs.confirm.open('Eliminar Moción', `¿Esta seguro que desea eliminar esta moción?`);
+                if(!confirm) return;
                 if(!motion){return;}
                 this.deleteLoader = true;
                 this.$http.delete(`/elimina-mocion/${motion._id}`).then(res => {

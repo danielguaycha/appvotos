@@ -16,13 +16,15 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
+    console.log(error);
+    /*
     const { response: { status }} = error;
     if(status === 401) {
         if(Vue.auth.getToken() !== null) {
             Vue.auth.destroyToken();
             window.location.reload();
         }
-    }
+    }*/
     return Promise.reject(error);
 });
 
