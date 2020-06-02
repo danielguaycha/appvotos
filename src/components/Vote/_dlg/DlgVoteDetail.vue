@@ -4,7 +4,11 @@
         <v-card>
             <v-card-title>Resultados</v-card-title>
             <v-card-text>
-                <ListVotes :motion="motion" v-if="motion" ref="form"/>
+                <ListVotes
+                        :act="act"
+                        :motion="motion"
+                           :session="session"
+                           v-if="motion" ref="form"/>
             </v-card-text>
         </v-card>
     </v-dialog>
@@ -19,14 +23,18 @@
             motion: {
                 type: String,
             },
+            session:  {
+                type: String,
+                default: ''
+            },
+            act: {
+                type: Number,
+            },
             value: Boolean,
         },
         data: () => ({
 
         }),
-        mounted() {
-            console.log(this.motion);
-        },
         methods: {
             close($event) {
                 this.$emit('session', $event);

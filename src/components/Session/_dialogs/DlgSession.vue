@@ -6,7 +6,9 @@
                 <span>Agregar Sesión</span>
             </v-card-title>
             <v-card-text>
-                <SessionForm @session="close"/>
+                <SessionForm @session="close">
+                    <v-btn @click="show = false" text color="error" class="mr-2">Cancelar</v-btn>
+                </SessionForm>
             </v-card-text>
         </v-card>
     </v-dialog>

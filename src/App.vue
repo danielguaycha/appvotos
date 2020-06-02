@@ -1,6 +1,11 @@
 <template>
   <div id="app">
-    <v-app>
+    <div class="loader" v-if="$store.getters.loader">
+      <div class="d-flex justify-center align-center" style="height: 100vh">
+          <Loader show message="''" />
+      </div>
+    </div>
+    <v-app v-else>
       <Menus />
       <v-content v-if="$store.getters.isAuth">
         <v-container fluid >
@@ -16,6 +21,7 @@
   </div>
 </template>
 <script>
+  import Loader from "./components/System/Loader";
   export default {
     name: "App",
     data: () => ({
@@ -30,6 +36,7 @@
     mounted() {
     },
     components: {
+      Loader,
       Menus: () => import("./components/System/Menus.vue")
     }
   };

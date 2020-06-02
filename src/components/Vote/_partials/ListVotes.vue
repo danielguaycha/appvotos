@@ -70,9 +70,9 @@
                 </p>
             </div>
 
-            <div class="text-center my-4">
-                <v-btn icon @click="generateReport">
-                    <v-icon>mdi-book</v-icon>
+            <div class="text-center my-6">
+                <v-btn @click="generateReport" color="primary" elevation="0">
+                    <v-icon left>mdi-file-pdf</v-icon>
                     Descargar Reporte</v-btn>
             </div>
         </div>
@@ -93,6 +93,13 @@
         props: {
             motion: {
                 type: String,
+            },
+            session: {
+                type: String,
+                default: ''
+            },
+            act: {
+                type: Number,
             }
         },
         data: () => ({
@@ -148,6 +155,7 @@
         }),
         mounted() {
             this.getVotes();
+            this.getActNumber();
         },
         methods: {
             generateReport(){
@@ -157,7 +165,6 @@
                 let persons = [];
                 persons.push([{text:'CONCEJAL', bold: true}, {text:'OPCIÓN', bold: true}, {text:'TIPO', bold: true}]);
                 for (let i=0; i<this.votes.length; i++){
-                    console.log(this.votes[i]);
                     persons.push([
                         `${this.votes[i].user[0].lastname} ${this.votes[i].user[0].name}`,
                         `${this.votes[i].options}`,
@@ -193,7 +200,7 @@
                         },
                         ' ',
                         {
-                            text: 'ACTA No. 013-0001.-\n',
+                            text: `ACTA No. ${this.getActNumber()}.-\n`,
                             bold: true
                         },
                         {
@@ -203,14 +210,14 @@
                         {
                             alignment: 'left',
                             columns: [
-                                { text: 'SESIÓN: ', bold: true, width: 55, },
-                                { text: 'Aquí el nombre de la sesión', width: '*'},
+                                { text: 'SESIÓN.- ', bold: true, width: 55, },
+                                { text: this.session.toUpperCase(), width: '*'},
                             ]
                         },
                         {
                             alignment: 'left',
                             columns: [
-                                { text: 'MOCIÓN: ', bold: true, width: 55, },
+                                { text: 'MOCIÓN.- ', bold: true, width: 55, },
                                 { text: `${this.motionName}\n\n`, width: '*'},
                             ]
                         },
@@ -230,11 +237,16 @@
                         },
 
                         {
-                            text: `\n\nRESULTADO:  ${this.getResult()}`,
-                            bold: true, alignment: 'justify',
+                            text: [`\nRESULTADO.-  ${this.getResult()}`],
+                            bold: true,
                             italics: true,
                             fontSize: 11,
-                            opacity: 0.8
+                            opacity: 0.8,
+                            style: 'justify'
+                        },
+                        {
+                            text: "\nCertifica.-\n",
+                            bold: true
                         },
                         `\n\n\n\n`,
                         {
@@ -256,6 +268,9 @@
                             alignment: 'center',
                             bold: true
                         },
+                        justify: {
+                            alignment: 'justify'
+                        },
                         tbUsers: {
 
                         }
@@ -268,7 +283,6 @@
             getVotes(){
                 this.loader = true;
                 this.$http.get(`/lista-voto-usuario-mocion/${this.motion}`).then(res => {
-                    console.log(res.data.motion.text);
                     if(res.data && res.data.motion) {
                         this.votes = res.data.motion.vote;
                         this.motionName = res.data.motion.text;
@@ -341,7 +355,7 @@
                             }
                             break;
                         default:
-                            console.log(v.type_poll);
+
                             break;
                     }
                 }
@@ -396,17 +410,25 @@
             getResult(){
                 let result = '';
                 if(this.aFavor > this.enContra) {
-                    result = `PARA LA MOCIÓN ${this.motionName.toUpperCase()} SE TIENE UNA MAYORÍA
-                    CON ${this.aFavor} VOTO(S) A FAVOR Y ${this.enBlanco} EN BLANCO, DANDO COMO RESULTADO UN TOTAL DE
-                    ${this.aFavor+this.enBlanco} VOTOS`;
+                    result = `PARA LA MOCIÓN ${this.motionName.toUpperCase()} SE TIENE UNA MAYORÍA `;
+                    result+=`CON ${this.aFavor} VOTOS A FAVOR Y ${this.enBlanco} EN BLANCO,`;
+                    result+= ` DANDO COMO RESULTADO UN TOTAL DE ${this.aFavor+this.enBlanco} VOTOS A FAVOR Y ${this.enContra} EN CONTRA.`;
                 } else if (this.aFavor < this.enContra) {
-                    result = `PARA LA MOCIÓN ${this.motionName.toUpperCase()} SE TIENE UNA MAYORÍA
-                    CON ${this.enContra} VOTO(S) EN CONTRA Y ${this.enBlanco} EN BLANCO, DANDO COMO RESULTADO UN TOTAL DE
-                    ${this.enContra+this.enBlanco} VOTOS`;
+                    result = `PARA LA MOCIÓN ${this.motionName.toUpperCase()} SE TIENE UNA MAYORÍA`;
+                    result+= `CON ${this.enContra} VOTOS EN CONTRA Y ${this.enBlanco} EN BLANCO, DANDO COMO RESULTADO UN TOTAL DE `;
+                    result+= `${this.enContra + this.enBlanco} VOTOS EN CONTRA Y ${this.aFavor}  A FAVOR`;
                 } else {
                     result = `LA VOTACIÓN ESTA EMPATÓ`;
                 }
                 return result;
+            },
+            getActNumber(){
+                const year = this.$moment().format('Y');
+                let ceros = "";
+                for(let i=0; i<3-this.act.toString().length; i++) {
+                    ceros+="0";
+                }
+                return `${ceros}${this.act}-${year}`;
             }
         },
 

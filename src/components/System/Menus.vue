@@ -65,9 +65,11 @@
         }),
         methods:{
             logout() {
+                this.$store.commit('setLoader', true);
                 this.$store.commit('destroyAll');
                 this.$auth.destroyToken();
                 this.$router.push('/login');
+                this.$store.commit('setLoader', false);
             }
         },
         components: {

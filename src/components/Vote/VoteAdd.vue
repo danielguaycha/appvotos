@@ -52,26 +52,35 @@
                         </v-radio-group>
                     </v-col>
                 </v-row>
+                <v-divider class="mt-2 mb-4"></v-divider>
                 <v-row justify="center">
-                <v-btn color="primary" class="mx-md-1" type="submit" :disabled="loader">
-                    <v-progress-circular
-                            class="mr-2"
-                            size="20"
-                            v-if="loader"
-                            indeterminate
-                            color="white"/>
-                    Guardar votación
-                </v-btn>
-                <v-spacer />
-                    <v-btn color="secondary"
+
+                    <v-btn color="red" class="mx-md-1" type="button"
+                           text dark :to="`/session/${this.session}`">
+                        <v-icon left dark>mdi-arrow-left</v-icon>
+                        Atrás
+                    </v-btn>
+                    <v-btn color="secondary" v-if="motionInfo && motionInfo.vote && motionInfo.vote.length > 0"
                            class="mx-md-1"
-                           type="button" text dark @click="viewDetail()">Ver resultados</v-btn>
-                <v-btn color="red" class="mx-md-1" type="button" text dark :to="`/session/${this.session}`">Atrás</v-btn>
-            </v-row>
+                           type="button" tile text @click="viewDetail()">
+
+                        <v-icon left dark>mdi-file-pdf</v-icon>
+                        Ver resultados
+                    </v-btn>
+                    <v-spacer />
+                    <v-btn color="primary" class="mx-md-1" type="submit" :disabled="loader" :loading="loader">
+                        <v-icon left dark>mdi-vote</v-icon>
+                        Guardar votación
+                    </v-btn>
+                </v-row>
             </v-form>
         </v-card-text>
     </v-card>
-        <DlgVoteDetail :motion="motion" ref="form" v-model="dlgDetail"/>
+        <DlgVoteDetail
+                :act="motionInfo._session.act"
+                :motion="motion"
+                :session="motionInfo._session.text"
+                ref="form" v-model="dlgDetail" v-if="motionInfo"/>
         <Confirm ref="confirm"></Confirm>
     </div>
 </template>
@@ -138,6 +147,7 @@
                             user: null,
                         };
                         this.selectedTypePoll = this.form.type_poll;
+                        this.motionInfo.vote.push(res.data.votes._id);
                     }
                     this.$refs.form.updateVotes()
                 }).catch(err => {

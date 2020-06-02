@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     auth: [],
+    loader: false
   },
   mutations: {
     setAuth(state, user) {
@@ -13,6 +14,9 @@ export default new Vuex.Store({
     },
     destroyAll(state) {
       state.auth = []
+    },
+    setLoader(state, loader) {
+      state.loader = loader;
     }
   },
   getters: {
@@ -22,9 +26,13 @@ export default new Vuex.Store({
     isAuth: state => {
       return (state.auth._id !== undefined);
     },
+    loader: state => {
+      return state.loader;
+    }
   },
   actions: {
     userRequest: ({ commit }) => {
+      commit('setLoader', true);
       return Axios.get('/private') //return the promise
           .then((resp) => {
             commit('setAuth', resp.data.user);
@@ -32,7 +40,7 @@ export default new Vuex.Store({
           })
           .catch(() => {
             commit('destroyAll');
-          });
+          }).finally(() => commit('setLoader', false));
     },
   },
   modules: {
